@@ -108,13 +108,13 @@
   let nadia = new Person('Nadia')
   
   yudhistiraBank.register(nadia, 'platinum', 5000)
-  // saldoAwal awal kurang dari minimum saldoAwal yang ditentukan
+  // saldo awal kurang dari minimum saldo yang ditentukan
   yudhistiraBank.register(nadia, 'platinum', 54000)
   //Selamat datang ke Yudhistira Bank, Nadia. Nomor Akun anda adalah 6332937. Total saldoAwal adalah 54000
   
   let nadiaAccount = nadia.bankAccount
   
-  /* PASTIKAN BAHWA saldoAwal SELALU BERKURANG ATAU BERTAMBAH UNTUK SETIAP TRANSAKSI */
+  /* PASTIKAN BAHWA SALDO SELALU BERKURANG ATAU BERTAMBAH UNTUK SETIAP TRANSAKSI */
   nadiaAccount.credit(300000)
   // Anda sukses menyimpan uang ke dalam bank.
   
@@ -125,9 +125,9 @@
   // Anda sukses menarik uang dari bank
   
   nadiaAccount.debet(130000, 'Beli Keyboard Lagi')
-  // saldoAwal minimum anda tidak terpenuhi untuk melakukan transaksi.
+  // saldo minimum anda tidak terpenuhi untuk melakukan transaksi.
   nadiaAccount.debet(600000, 'Bisa gak ya lebih besar dari balance ? ')
-  // saldoAwal anda tidak cukup
+  // saldo anda tidak cukup
   
   let semmi = new Person('Semmi Verian')
   yudhistiraBank.register(semmi, 'silver', 10000000)
