@@ -1,31 +1,21 @@
   class Bank {
     // Tulis Code Disini
-    constructor(name){
-      this.name = name 
-      this.nasabah = []
+    constructor(bankName){
+      this.bankName = bankName 
     }
 
-    register(person, tipe, saldo){
-      let accountNumber = Math.floor(1000000 + Math.random() * 9000000);
-      let akun
+    register(person, type, saldoAwal){
+      const accountNumber = Math.floor(Math.random() * 10000000);
 
-      if (tipe === "platinum"){
-        if (saldo < 50000){
-          console.log("Saldo awal kurang dari minimum saldo yang ditentukan")
-          return
-        }
-        akun = new Platinum(person.name, accountNumber, saldo)
-      } else if (tipe === "silver"){
-        if (saldo < 10000) {
-          console.log("Saldo awal kurang dari minimum saldo yang ditentukan")
-          return
-        }
-        akun = new Silver(person.name, accountNumber, saldo)
+      if (type === "platinum" && saldoAwal > 50000){
+        person.bankAccount = new Platinum(person.name, accountNumber, 50000, saldoAwal)
+        console.log(`Selamat datang ke ${this.bankName}, ${person.name}. Nomor Akun anda adalah ${accountNumber}. Total saldo adalah ${saldoAwal}`)
+      } else if (type === "silver" && saldoAwal > 10000){
+        person.bankAccount = new Platinum(person.name, accountNumber, 10000, saldoAwal)
+        console.log(`Selamat datang ke ${this.bankName}, ${person.name}. Nomor Akun anda adalah ${accountNumber}. Total saldo adalah ${saldoAwal}`)
+      } else {
+        console.log("saldo awal kurang dari minimum saldo yang ditentukan");
       }
-      
-      person.bankAccount = akun
-      this.nasabah.push(akun)
-      console.log(`Selamat datang ke ${this.name}, ${person.name}. Nomor Akun anda adalah ${accountNumber}. Total saldo adalah ${saldo}`)
     }
   }
     
@@ -33,75 +23,71 @@
     // Tulis Code Disini
     constructor(name) {
       this.name = name 
-      this.bankAccount
+      this.bankAccount = null 
     }
   }
     
   
   class Member {
     // Tulis Code Disini
-    constructor(name, accountNumber, saldo , minimumBalance, tipe){
-      this.memberName = name
+    constructor(memberName, accountNumber, minimumBalance , balance){
+      this.memberName = memberName
       this.accountNumber = accountNumber
       this.minimumBalance = minimumBalance
-      this.balance = saldo
+      this.balance = balance
       this.transaction = []
-      this.type = tipe
     }
 
     credit(nominal){
-        if(nominal < 10000){
+        if(nominal > 0 && nominal >= this.minimumBalance){
+          this.balance += nominal
+          this.transaction.push(new Transaction(nominal, "credit", "nyetor"))
+          console.log("Anda sukses menyimpan uang ke dalam bank")
+        } else {
           console.log("Belum memenuhi minimal uang yang dapat di setor")
-          return
-        } 
-
-        this.balance += nominal
-        this.transaction.push(new Transaction(nominal, "credit", "nyetor"))
-        console.log("Anda sukses menyimpan uang ke dalam bank")
+        }   
     }
 
     debet(nominal, note){
-      if(this.balance - nominal < this.minimumBalance){
-        if(nominal > this.balance){
-          console.log("Saldo anda tidak cukup")
-        } else {
-          console.log("Saldo minimum anda tidak terpenuhi untuk melakukan transaksi")
-        }
-        return
+      if(nominal > 0 && nominal <= this.balance && this.balance - nominal >= this.minimumBalance){
+        this.balance -= nominal
+        this.transaction.push(new Transaction(nominal, "debet", note))
+        console.log("Anda sukses menarik uang dari bank")
+      }else if (nominal > this.balance){
+        console.log("Saldo anda tidak cukup");
+      }else {
+        console.log("Saldo minimum anda tidak terpenuhi untuk melakukan transaksi.")
       }
-
-      this.balance -= nominal
-      this.transaction.push(new Transaction(nominal, "debet", note))
-      console.log("Anda sukses menarik uang dari bank")
     }
 
     transfer(tujuan, nominal){
-      if(this.balance - nominal < this.minimumBalance){
-        console.log(`Anda gagal transfer ke ${tujuan.memberName}`)
-        return
+      if(nominal > 0 && nominal <= this.balance && this.balance - nominal >= this.minimumBalance){
+        this.balance -= nominal
+        this.transaction.push(new Transaction(nominal, "debet", `transfer ke akun ${tujuan.memberName}`))
+
+        tujuan.balance += nominal
+        tujuan.transaction.push(new Transaction(nominal, "credit", `transfer dari akun ${this.memberName}`))
+
+        console.log(`Anda sukses transfer ke ${tujuan.memberName}`)
+      }else {
+        console.log("Anda gagal transfer ke " + tujuan.memberName);
       }
-      
-      this.balance -= nominal
-      this.transaction.push(new Transaction(nominal, "debet", `transfer ke akun ${tujuan.memberName}`))
-
-      tujuan.balance += nominal
-      tujuan.transaction.push(new Transaction(nominal, "credit", `transfer dari akun ${this.memberName}`))
-
-      console.log(`Anda sukses transfer ke ${tujuan.memberName}`)
     }
   }
   
   class Platinum extends Member {
     // Tulis Code Disini
-    constructor(name, accountNumber, saldo){
-      super(name, accountNumber, saldo, 50000, "platinum" )
+    constructor(memberName, accountNumber,minimumBalance, balance){
+      super(memberName, accountNumber,minimumBalance, balance )
+      this.type = "platinum"
     }
   }
   
   class Silver extends Member {
     // Tulis Code Disini
-    constructor(name, accountNumber, saldo){
-      super(name, accountNumber, saldo, 10000, "silver" )
+    constructor(memberName, accountNumber,minimumBalance, balance){
+      super(memberName, accountNumber,minimumBalance, balance )
+      this.type = "silver"
     }
   }
   
@@ -122,13 +108,13 @@
   let nadia = new Person('Nadia')
   
   yudhistiraBank.register(nadia, 'platinum', 5000)
-  // Saldo awal kurang dari minimum saldo yang ditentukan
+  // saldoAwal awal kurang dari minimum saldoAwal yang ditentukan
   yudhistiraBank.register(nadia, 'platinum', 54000)
-  //Selamat datang ke Yudhistira Bank, Nadia. Nomor Akun anda adalah 6332937. Total saldo adalah 54000
+  //Selamat datang ke Yudhistira Bank, Nadia. Nomor Akun anda adalah 6332937. Total saldoAwal adalah 54000
   
   let nadiaAccount = nadia.bankAccount
   
-  /* PASTIKAN BAHWA SALDO SELALU BERKURANG ATAU BERTAMBAH UNTUK SETIAP TRANSAKSI */
+  /* PASTIKAN BAHWA saldoAwal SELALU BERKURANG ATAU BERTAMBAH UNTUK SETIAP TRANSAKSI */
   nadiaAccount.credit(300000)
   // Anda sukses menyimpan uang ke dalam bank.
   
@@ -139,9 +125,9 @@
   // Anda sukses menarik uang dari bank
   
   nadiaAccount.debet(130000, 'Beli Keyboard Lagi')
-  // Saldo minimum anda tidak terpenuhi untuk melakukan transaksi.
+  // saldoAwal minimum anda tidak terpenuhi untuk melakukan transaksi.
   nadiaAccount.debet(600000, 'Bisa gak ya lebih besar dari balance ? ')
-  // Saldo anda tidak cukup
+  // saldoAwal anda tidak cukup
   
   let semmi = new Person('Semmi Verian')
   yudhistiraBank.register(semmi, 'silver', 10000000)
